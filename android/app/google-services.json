@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1095868122466",
+    "project_id": "billerapp-22122",
+    "storage_bucket": "billerapp-22122.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095868122466:android:5a47962a28d1de8dc8583b",
+        "android_client_info": {
+          "package_name": "com.jff.biller"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095868122466-6t3ml07gnmdc6bd2qs88837hr31geiic.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1aFThaew5hiVzuZ-GAG_xhHoW4eCVvK8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095868122466-6t3ml07gnmdc6bd2qs88837hr31geiic.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
