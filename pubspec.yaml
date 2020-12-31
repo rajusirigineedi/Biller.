@@ -32,6 +32,7 @@ dependencies:
   cloud_firestore: ^0.14.1+2
   flutter_calendar_carousel: ^1.5.2
   shared_preferences: ^0.5.12+4
+  paginate_firestore: ^0.2.2
 
 
 

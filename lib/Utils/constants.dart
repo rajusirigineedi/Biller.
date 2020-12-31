@@ -49,3 +49,5 @@ List<String> kMonthList = [
   'NOV',
   'DEC',
 ];
+
+enum SearchType { all, name, serial }

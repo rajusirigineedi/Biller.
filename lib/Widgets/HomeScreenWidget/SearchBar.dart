@@ -12,82 +12,89 @@ class SearchBar extends StatefulWidget {
 class _SearchBarState extends State<SearchBar> {
   bool isExpanded = false;
   String searchWord;
+  var focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: isExpanded
-          ? Container(
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      height: 48,
-                      child: TextField(
-                        onChanged: (value) {
-                          searchWord = value;
-                        },
-                        style: TextStyle(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        decoration: InputDecoration.collapsed(
-                          hintText: 'Search here',
-                          hintStyle: TextStyle(
+          ? GestureDetector(
+              onTap: () {
+                focusNode.requestFocus();
+              },
+              child: Container(
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        height: 48,
+                        child: TextField(
+                          onChanged: (value) {
+                            searchWord = value;
+                          },
+                          focusNode: focusNode,
+                          style: TextStyle(
                             color: kPrimaryColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: 16,
+                          ),
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Search here',
+                            hintStyle: TextStyle(
+                              color: kPrimaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            if (searchWord != null) {
-                              if (searchWord == '') return;
-                              searchWord = searchWord.trim();
-                              widget.function(searchWord.toLowerCase());
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Icon(
-                              LineIcons.search,
+                    Expanded(
+                      flex: 1,
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (searchWord != null) {
+                                if (searchWord == '') return;
+                                searchWord = searchWord.trim();
+                                widget.function(searchWord.toLowerCase());
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(
+                                LineIcons.search,
+                              ),
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isExpanded = false;
-                            });
-                            widget.function('');
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(
-                              LineIcons.close,
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isExpanded = false;
+                              });
+                              widget.function('');
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(8),
+                              child: Icon(
+                                LineIcons.close,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.0),
-                color: kViewBarColor,
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.0),
+                  color: kViewBarColor,
+                ),
               ),
             )
           : Row(
@@ -125,6 +132,7 @@ class _SearchBarState extends State<SearchBar> {
                   onTap: () {
                     setState(() {
                       isExpanded = true;
+                      focusNode.requestFocus();
                     });
                   },
                   child: Container(

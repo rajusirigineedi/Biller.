@@ -25,6 +25,7 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   bool isLoading = false;
+  var focusNode = FocusNode();
 
   Future<bool> clearBill(int enteredAmount) async {
     setState(() {
@@ -278,53 +279,62 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                                       Padding(
                                         padding: EdgeInsets.only(
                                             top: 14, bottom: 14),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 34, vertical: 16),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                '₹',
-                                                style: TextStyle(
-                                                  color: kPrimaryColor,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Expanded(
-                                                child: TextField(
-                                                  controller: _textController,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            focusNode.requestFocus();
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 34, vertical: 16),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  '₹',
                                                   style: TextStyle(
                                                     color: kPrimaryColor,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16,
                                                   ),
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  decoration:
-                                                      InputDecoration.collapsed(
-                                                          hintText:
-                                                              'Enter Amount',
-                                                          fillColor:
-                                                              kPrimaryColor,
-                                                          hintStyle: TextStyle(
-                                                            color:
-                                                                kPrimaryColor,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                          )),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            color: kDimBackgroundColor,
+                                                SizedBox(
+                                                  width: 16,
+                                                ),
+                                                Expanded(
+                                                  child: TextField(
+                                                    focusNode: focusNode,
+                                                    controller: _textController,
+                                                    style: TextStyle(
+                                                      color: kPrimaryColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    decoration: InputDecoration
+                                                        .collapsed(
+                                                            hintText:
+                                                                'Enter Amount',
+                                                            fillColor:
+                                                                kPrimaryColor,
+                                                            hintStyle:
+                                                                TextStyle(
+                                                              color:
+                                                                  kPrimaryColor,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16,
+                                                            )),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              color: kDimBackgroundColor,
+                                            ),
                                           ),
                                         ),
                                       ),

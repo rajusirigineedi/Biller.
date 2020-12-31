@@ -1,11 +1,7 @@
-import 'package:biller/Widgets/HomeScreenWidget/PaidBar.dart';
 import 'package:biller/Widgets/HomeScreenWidget/SearchBar.dart';
-import 'package:biller/Widgets/HomeScreenWidget/UserBarPaidList.dart';
-import 'package:biller/Widgets/HomeScreenWidget/UserBarUserList.dart';
-import 'package:biller/Widgets/NoResult.dart';
-import 'package:biller/models/AppUser.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:biller/Widgets/PaginationWidgets/PaginateAllUsers.dart';
+import 'package:biller/Widgets/PaginationWidgets/PaginateSearchedUsers.dart';
+import 'package:biller/Widgets/PaginationWidgets/PaginateSearchedUsersSerial.dart';
 import 'package:flutter/material.dart';
 
 class PaidListScreen extends StatefulWidget {
@@ -14,37 +10,23 @@ class PaidListScreen extends StatefulWidget {
 }
 
 class _PaidListScreenState extends State<PaidListScreen> {
-  bool searchClicked = false;
   String searchWord;
+  var correctPaginatingWidget;
 
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  Stream<QuerySnapshot> _firestoreStream;
-
-  Stream<QuerySnapshot> searchData(String searchWord) {
+  void searchData(String searchWord) {
     setState(() {
       this.searchWord = searchWord;
       if (searchWord == '' || searchWord == null) {
-        _firestoreStream = _firestore
-            .collection("users")
-            .where('currentpackpaidon', isNotEqualTo: '')
-            .orderBy('currentpackpaidon', descending: false)
-            .orderBy('username', descending: false)
-            .snapshots();
+        correctPaginatingWidget = PaginateAllUsersPaid();
       } else {
         print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
         print(searchWord);
         bool usernamequery = true;
         if (usernamequery) {
-          _firestoreStream = _firestore
-              .collection("users")
-              .orderBy('username')
-              .startAt([searchWord]).endAt([searchWord + '\uf8ff']).snapshots();
+          correctPaginatingWidget = PaginateSearchedUsersPaid(searchWord);
         } else {
-          _firestoreStream = _firestore
-              .collection("users")
-              .orderBy('serial')
-              .startAt([searchWord]).endAt([searchWord + '\uf8ff']).snapshots();
+          correctPaginatingWidget =
+              PaginateSearchedUsersSerialUnPaid(searchWord);
         }
       }
     });
@@ -68,48 +50,7 @@ class _PaidListScreenState extends State<PaidListScreen> {
           children: [
             SearchBar(searchData),
             Expanded(
-              child: StreamBuilder(
-                  stream: _firestoreStream,
-                  builder: (context, snapshot) {
-                    print(">>>>>>>>invoking ");
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      default:
-                        if (snapshot.data == null) {
-                          return Text("No Data");
-                        }
-                        return (snapshot.data.documents.length == 0)
-                            ? NoResult(searchWord: searchWord)
-                            : ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                itemCount: snapshot.data.documents.length,
-                                itemBuilder: (context, index) {
-                                  var d = snapshot.data.documents[index];
-                                  var id = d.documentID;
-
-                                  AppUser user = new AppUser(
-                                      d['username'],
-                                      d['phone'],
-                                      d['serial'],
-                                      d['isfibernet'],
-                                      d['address'],
-                                      d['totaldue'],
-                                      d['currentpackamount'],
-                                      d['currentpacksummary'],
-                                      d['currentpackpaidon'],
-                                      id);
-                                  if (d['currentpackpaidon'] == '')
-                                    return PaidBar(user);
-                                  return UserBarPaidList(user);
-                                });
-                    }
-                  }),
+              child: correctPaginatingWidget,
             ),
           ],
         )),

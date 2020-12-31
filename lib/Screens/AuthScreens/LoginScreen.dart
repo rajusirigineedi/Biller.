@@ -204,6 +204,7 @@ class AuthTextFields extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final bool isPassword;
+  final focusNode = FocusNode();
 
   AuthTextFields(this.iconfield, this.label, this.controller, this.isPassword);
 
@@ -211,42 +212,48 @@ class AuthTextFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8.0),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 34, vertical: 18),
-        width: double.infinity,
-        child: Row(
-          children: [
-            Icon(
-              iconfield,
-            ),
-            SizedBox(
-              width: 8,
-            ),
-            Expanded(
-              child: TextField(
-                controller: controller,
-                obscureText: isPassword,
-                style: TextStyle(
-                  color: kPrimaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-                decoration: InputDecoration.collapsed(
-                  hintText: label,
-                  fillColor: kPrimaryColor,
-                  hintStyle: TextStyle(
+      child: GestureDetector(
+        onTap: () {
+          focusNode.requestFocus();
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 34, vertical: 18),
+          width: double.infinity,
+          child: Row(
+            children: [
+              Icon(
+                iconfield,
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                child: TextField(
+                  focusNode: focusNode,
+                  controller: controller,
+                  obscureText: isPassword,
+                  style: TextStyle(
                     color: kPrimaryColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
+                  decoration: InputDecoration.collapsed(
+                    hintText: label,
+                    fillColor: kPrimaryColor,
+                    hintStyle: TextStyle(
+                      color: kPrimaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          color: kDimBackgroundColor,
+            ],
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            color: kDimBackgroundColor,
+          ),
         ),
       ),
     );

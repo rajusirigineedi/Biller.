@@ -27,6 +27,7 @@ class _UpgradePackFragmentState extends State<UpgradePackFragment> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Container(
       child: Column(
         children: [
@@ -48,94 +49,105 @@ class _UpgradePackFragmentState extends State<UpgradePackFragment> {
                         ),
                       ),
                     ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 34, vertical: 16),
-                      child: Row(
-                        children: [
-                          Text(
-                            '₹',
-                            style: TextStyle(
-                              color: kPrimaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 16,
-                          ),
-                          Expanded(
-                            child: TextField(
-                              onChanged: (value) {
-                                amountEntered = value;
-                              },
+                    GestureDetector(
+                      onTap: () {
+                        node.nextFocus();
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 34, vertical: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              '₹',
                               style: TextStyle(
                                 color: kPrimaryColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration.collapsed(
-                                  hintText: 'Enter Amount',
-                                  fillColor: kPrimaryColor,
-                                  hintStyle: TextStyle(
-                                    color: kPrimaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  )),
                             ),
-                          ),
-                        ],
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: kDimBackgroundColor,
+                            SizedBox(
+                              width: 16,
+                            ),
+                            Expanded(
+                              child: TextField(
+                                onChanged: (value) {
+                                  amountEntered = value;
+                                },
+                                onEditingComplete: () => node.nextFocus(),
+                                style: TextStyle(
+                                  color: kPrimaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration.collapsed(
+                                    hintText: 'Enter Amount',
+                                    fillColor: kPrimaryColor,
+                                    hintStyle: TextStyle(
+                                      color: kPrimaryColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    )),
+                              ),
+                            ),
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: kDimBackgroundColor,
+                        ),
                       ),
                     ),
                     SizedBox(
                       height: 8,
                     ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 34, vertical: 16),
-                      child: Row(
-                        children: [
-                          Text(
-                            '#',
-                            style: TextStyle(
-                              color: kPrimaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 16,
-                          ),
-                          Expanded(
-                            child: TextField(
-                              onChanged: (value) {
-                                summary = value;
-                              },
+                    GestureDetector(
+                      onTap: () {
+                        node.nextFocus();
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 34, vertical: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              '#',
                               style: TextStyle(
                                 color: kPrimaryColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
-                              decoration: InputDecoration.collapsed(
-                                  hintText: 'Summary',
-                                  fillColor: kPrimaryColor,
-                                  hintStyle: TextStyle(
-                                    color: kPrimaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  )),
                             ),
-                          ),
-                        ],
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: kDimBackgroundColor,
+                            SizedBox(
+                              width: 16,
+                            ),
+                            Expanded(
+                              child: TextField(
+                                onChanged: (value) {
+                                  summary = value;
+                                },
+                                style: TextStyle(
+                                  color: kPrimaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                                decoration: InputDecoration.collapsed(
+                                    hintText: 'Summary',
+                                    fillColor: kPrimaryColor,
+                                    hintStyle: TextStyle(
+                                      color: kPrimaryColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    )),
+                              ),
+                            ),
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: kDimBackgroundColor,
+                        ),
                       ),
                     ),
                     Padding(
