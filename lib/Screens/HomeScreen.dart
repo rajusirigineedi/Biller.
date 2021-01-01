@@ -1,6 +1,9 @@
 import 'package:biller/Screens/HomeBarScreens/PaidListScreen.dart';
 import 'package:biller/Screens/HomeBarScreens/UnPaidListScreen.dart';
 import 'package:biller/Screens/HomeBarScreens/UserListScreen.dart';
+import 'package:biller/Screens/PaginationScreens/AllUsers/AllUserHolder.dart';
+import 'package:biller/Screens/PaginationScreens/PaidUsers/PaidUsersHolder.dart';
+import 'package:biller/Screens/PaginationScreens/UnPaidUsers/UnPaidUsersHolder.dart';
 import 'package:biller/Screens/PaginationTrailScreen.dart';
 import 'package:biller/Utils/StaticUser.dart';
 import 'package:biller/Utils/constants.dart';
@@ -23,9 +26,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   List<Widget> _widgetOptions = <Widget>[
-    UserListScreen(),
-    PaidListScreen(),
-    UnPaidListScreen(),
+    AllUserHolder(),
+    PaidUsersHolder(),
+    UnPaidUsersHolder(),
     BalanceScreenMiddleWare()
   ];
 
