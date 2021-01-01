@@ -1,3 +1,4 @@
+import 'package:biller/Widgets/NoResult.dart';
 import 'package:biller/Widgets/UserDetailScreenWidgets/DueAndPayWidget.dart';
 import 'package:biller/models/AppUser.dart';
 import 'package:biller/models/Bill.dart';
@@ -50,7 +51,7 @@ class _DueBillsFragmentState extends State<DueBillsFragment> {
                       if (snapshot.data == null) {
                         return Text("No Data");
                       }
-                      return new ListView.builder(
+                      return ListView.builder(
                           scrollDirection: Axis.vertical,
                           itemCount: snapshot.data.documents.length,
                           itemBuilder: (context, index) {

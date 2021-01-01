@@ -219,6 +219,33 @@ class _BalanceScreenState extends State<BalanceScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 16.0),
+                                child: Text.rich(
+                                  TextSpan(
+                                    style: TextStyle(
+                                      fontFamily: 'Fugaz',
+                                      fontSize: 28,
+                                      color: kPrimaryColor,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Biller',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: '.',
+                                        style: TextStyle(
+                                          color: kSecondaryColor,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               packActivated
                                   ? Container()
                                   : GestureDetector(
@@ -291,6 +318,14 @@ class _BalanceScreenState extends State<BalanceScreen> {
                                                 fontWeight: FontWeight.w900,
                                                 fontSize: 18,
                                               ),
+                                            ),
+                                            Text(
+                                              'To be collected : ₹ ${thisMonthSpent + dueFromLastMonth - monthCollection}',
+                                              style: TextStyle(
+                                                color: kSecondaryColor,
+                                                fontWeight: FontWeight.w900,
+                                                fontSize: 18,
+                                              ),
                                             )
                                           ],
                                         ),
@@ -308,7 +343,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
                               Padding(
                                 padding: EdgeInsets.only(left: 8.0),
                                 child: Text(
-                                  'Collections on a day',
+                                  'Collections on a Day',
                                   style: TextStyle(
                                     color: kDullFontColor,
                                     fontWeight: FontWeight.bold,

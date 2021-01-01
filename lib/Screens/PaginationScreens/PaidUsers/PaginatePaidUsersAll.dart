@@ -19,7 +19,7 @@ class _PaginatePaidUsersAllState extends State<PaginatePaidUsersAll> {
   bool bottomLoading = false;
 
   bool hasMoreDataBelow = true;
-  int documentLimit = 5;
+  int documentLimit = 10;
   DocumentSnapshot lastDocument;
   ScrollController _scrollController = ScrollController();
 

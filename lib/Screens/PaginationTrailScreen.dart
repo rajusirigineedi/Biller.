@@ -22,7 +22,7 @@ class _PaginationTrailScreenState extends State<PaginationTrailScreen> {
   bool bottomLoading = false;
 
   bool hasMoreDataBelow = true;
-  int documentLimit = 5;
+  int documentLimit = 10;
   DocumentSnapshot lastDocument;
   ScrollController _scrollController = ScrollController();
   ScrollController _searchScrollController = ScrollController();

@@ -1,7 +1,10 @@
 import 'package:biller/Screens/PaginationScreens/AllUsers/PaginateUserAll.dart';
+import 'package:biller/Utils/constants.dart';
 import 'package:biller/Widgets/HomeScreenWidget/SearchBar.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 
+import '../../CreateUserScreen.dart';
 import 'PaginateUserUsername.dart';
 
 class AllUserHolder extends StatefulWidget {
@@ -51,6 +54,32 @@ class _AllUserHolderState extends State<AllUserHolder> {
             ),
           ]),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(LineIcons.user_plus),
+        backgroundColor: kSecondaryColor,
+        elevation: 0,
+        highlightElevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16.0),
+          ),
+        ),
+        onPressed: () async {
+//          await _auth.signOut();
+//          Navigator.push(
+//            context,
+//            MaterialPageRoute(
+//              builder: (context) => LoginScreen(),
+//            ),
+//          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateUserScreen(),
+            ),
+          );
+        },
       ),
     );
   }

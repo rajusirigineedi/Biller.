@@ -85,7 +85,7 @@ class _SearchBarState extends State<SearchBar> {
                               setState(() {
                                 isExpanded = false;
                               });
-                              widget.function('');
+                              widget.function('', true);
                             },
                             child: Container(
                               padding: EdgeInsets.all(8),
