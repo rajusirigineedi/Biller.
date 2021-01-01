@@ -12,14 +12,21 @@ class AllUserHolder extends StatefulWidget {
 class _AllUserHolderState extends State<AllUserHolder> {
   Widget toBePlaced;
 
-  void searchFunction(String searchWord) {
+  void searchFunction(String searchWord, [bool username]) {
     if (searchWord == '') {
       setState(() {
         toBePlaced = PaginateUserAll();
       });
-    } else {
+    }
+    if (username != null) {
+      print("stirng called royy'");
       setState(() {
-        toBePlaced = PaginateUserUsername(searchWord);
+        toBePlaced = PaginateUserUsername(searchWord, true);
+      });
+    } else {
+      print("number called correclyt");
+      setState(() {
+        toBePlaced = PaginateUserUsername(searchWord, false);
       });
     }
   }

@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 
 class PaginatePaidUsersUsername extends StatefulWidget {
   final String searchWord;
-  PaginatePaidUsersUsername(this.searchWord);
+  final bool usernameType;
+
+  PaginatePaidUsersUsername(this.searchWord, this.usernameType);
   @override
   _PaginatePaidUsersUsernameState createState() =>
       _PaginatePaidUsersUsernameState();
@@ -17,6 +19,7 @@ class _PaginatePaidUsersUsernameState extends State<PaginatePaidUsersUsername> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String searchWord;
 
+  bool usernameType = true;
   List<DocumentSnapshot> users = [];
   bool initialLoading = false;
   bool bottomLoading = false;
@@ -45,7 +48,7 @@ class _PaginatePaidUsersUsernameState extends State<PaginatePaidUsersUsername> {
     if (lastDocument == null) {
       querySnapshot = await _firestore
           .collection("users")
-          .orderBy('username')
+          .orderBy(usernameType ? 'username' : 'serial')
           .startAt([searchWord])
           .endAt([searchWord + '\uf8ff'])
           .limit(documentLimit)
@@ -53,7 +56,7 @@ class _PaginatePaidUsersUsernameState extends State<PaginatePaidUsersUsername> {
     } else {
       querySnapshot = await _firestore
           .collection("users")
-          .orderBy('username')
+          .orderBy(usernameType ? 'username' : 'serial')
           .startAt([searchWord])
           .endAt([searchWord + '\uf8ff'])
           .startAfterDocument(lastDocument)
@@ -100,6 +103,7 @@ class _PaginatePaidUsersUsernameState extends State<PaginatePaidUsersUsername> {
   void initState() {
     // TODO: implement initState
     searchWord = widget.searchWord;
+    usernameType = widget.usernameType;
     loadInitialData();
   }
 
@@ -107,6 +111,7 @@ class _PaginatePaidUsersUsernameState extends State<PaginatePaidUsersUsername> {
   void didUpdateWidget(covariant PaginatePaidUsersUsername oldWidget) {
     super.didUpdateWidget(oldWidget);
     searchWord = widget.searchWord;
+    usernameType = widget.usernameType;
     loadInitialData();
   }
 

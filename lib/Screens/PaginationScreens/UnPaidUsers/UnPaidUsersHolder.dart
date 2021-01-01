@@ -11,15 +11,23 @@ class UnPaidUsersHolder extends StatefulWidget {
 class _UnPaidUsersHolderState extends State<UnPaidUsersHolder> {
   Widget toBePlaced;
 
-  void searchFunction(String searchWord) {
+  void searchFunction(String searchWord, [bool username]) {
     if (searchWord == '') {
       setState(() {
         toBePlaced = PaginateUnPaidUsersAll();
       });
     } else {
-      setState(() {
-        toBePlaced = PaginateUnPaidUserUsername(searchWord);
-      });
+      if (username != null) {
+        print("stirng called royy'");
+        setState(() {
+          toBePlaced = PaginateUnPaidUserUsername(searchWord, true);
+        });
+      } else {
+        print("number called correclyt");
+        setState(() {
+          toBePlaced = PaginateUnPaidUserUsername(searchWord, false);
+        });
+      }
     }
   }
 

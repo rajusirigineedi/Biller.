@@ -12,15 +12,23 @@ class PaidUsersHolder extends StatefulWidget {
 class _PaidUsersHolderState extends State<PaidUsersHolder> {
   Widget toBePlaced;
 
-  void searchFunction(String searchWord) {
+  void searchFunction(String searchWord, [bool username]) {
     if (searchWord == '') {
       setState(() {
         toBePlaced = PaginatePaidUsersAll();
       });
     } else {
-      setState(() {
-        toBePlaced = PaginatePaidUsersUsername(searchWord);
-      });
+      if (username != null) {
+        print("stirng called royy'");
+        setState(() {
+          toBePlaced = PaginatePaidUsersUsername(searchWord, true);
+        });
+      } else {
+        print("number called correclyt");
+        setState(() {
+          toBePlaced = PaginatePaidUsersUsername(searchWord, false);
+        });
+      }
     }
   }
 

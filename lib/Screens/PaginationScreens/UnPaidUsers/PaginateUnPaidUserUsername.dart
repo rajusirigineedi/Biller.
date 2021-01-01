@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 
 class PaginateUnPaidUserUsername extends StatefulWidget {
   final String searchWord;
-  PaginateUnPaidUserUsername(this.searchWord);
+  final bool usernameType;
+  PaginateUnPaidUserUsername(this.searchWord, this.usernameType);
   @override
   _PaginateUnPaidUserUsernameState createState() =>
       _PaginateUnPaidUserUsernameState();
@@ -18,6 +19,7 @@ class _PaginateUnPaidUserUsernameState
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String searchWord;
 
+  bool usernameType = true;
   List<DocumentSnapshot> users = [];
   bool initialLoading = false;
   bool bottomLoading = false;
@@ -46,7 +48,7 @@ class _PaginateUnPaidUserUsernameState
     if (lastDocument == null) {
       querySnapshot = await _firestore
           .collection("users")
-          .orderBy('username')
+          .orderBy(usernameType ? 'username' : 'serial')
           .startAt([searchWord])
           .endAt([searchWord + '\uf8ff'])
           .limit(documentLimit)
@@ -54,7 +56,7 @@ class _PaginateUnPaidUserUsernameState
     } else {
       querySnapshot = await _firestore
           .collection("users")
-          .orderBy('username')
+          .orderBy(usernameType ? 'username' : 'serial')
           .startAt([searchWord])
           .endAt([searchWord + '\uf8ff'])
           .startAfterDocument(lastDocument)
@@ -101,12 +103,14 @@ class _PaginateUnPaidUserUsernameState
   void initState() {
     // TODO: implement initState
     searchWord = widget.searchWord;
+    usernameType = widget.usernameType;
     loadInitialData();
   }
 
   @override
   void didUpdateWidget(covariant PaginateUnPaidUserUsername oldWidget) {
     super.didUpdateWidget(oldWidget);
+    usernameType = widget.usernameType;
     searchWord = widget.searchWord;
     loadInitialData();
   }

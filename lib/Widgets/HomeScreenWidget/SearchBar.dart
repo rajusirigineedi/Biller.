@@ -62,8 +62,15 @@ class _SearchBarState extends State<SearchBar> {
                               if (searchWord != null) {
                                 if (searchWord == '') return;
                                 searchWord = searchWord.trim();
+                                try {
+                                  int convertible = int.parse(searchWord);
+                                  widget.function(searchWord.toLowerCase());
+                                } catch (e) {
+                                  print(e);
+                                  widget.function(
+                                      searchWord.toLowerCase(), true);
+                                }
                                 print("Search Bar in $searchWord");
-                                widget.function(searchWord.toLowerCase());
                               }
                             },
                             child: Container(
