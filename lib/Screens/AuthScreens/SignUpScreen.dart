@@ -112,8 +112,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           .doc(newUser.user.uid)
                           .set({'isadmin': false, 'email': usermail});
                       if (newUser != null) {
-                        print(newUser);
-                        print('Creation successful');
+//                        print(newUser);
+//                        print('Creation successful');
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
                         prefs.setBool('isAdmin', false);
@@ -125,10 +125,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         );
                         Navigator.pop(context);
                       }
-                      print(newUser);
+//                      print(newUser);
                     } catch (e) {
                       print(e);
-                      print("error creating");
+//                      print("error creating");
                     }
 
                     setState(() {

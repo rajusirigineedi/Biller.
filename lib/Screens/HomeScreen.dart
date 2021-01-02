@@ -35,8 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void loadIfAdmin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isAdmin = await prefs.getBool('isAdmin') ?? false;
-    currentUserIsAdmin = isAdmin;
-    print(currentUserIsAdmin);
+    setState(() {
+      currentUserIsAdmin = isAdmin;
+    });
+//    print(currentUserIsAdmin);
   }
 
   @override

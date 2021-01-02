@@ -1,4 +1,5 @@
 import 'package:biller/Screens/PaginationScreens/AllUsers/PaginateUserAll.dart';
+import 'package:biller/Utils/StaticUser.dart';
 import 'package:biller/Utils/constants.dart';
 import 'package:biller/Widgets/HomeScreenWidget/SearchBar.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +23,12 @@ class _AllUserHolderState extends State<AllUserHolder> {
       });
     }
     if (username != null) {
-      print("stirng called royy'");
+//      print("stirng called royy'");
       setState(() {
         toBePlaced = PaginateUserUsername(searchWord, true);
       });
     } else {
-      print("number called correclyt");
+//      print("number called correclyt");
       setState(() {
         toBePlaced = PaginateUserUsername(searchWord, false);
       });
@@ -55,17 +56,18 @@ class _AllUserHolderState extends State<AllUserHolder> {
           ]),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(LineIcons.user_plus),
-        backgroundColor: kSecondaryColor,
-        elevation: 0,
-        highlightElevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16.0),
-          ),
-        ),
-        onPressed: () async {
+      floatingActionButton: (currentUserIsAdmin)
+          ? FloatingActionButton(
+              child: Icon(LineIcons.user_plus),
+              backgroundColor: kSecondaryColor,
+              elevation: 0,
+              highlightElevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(16.0),
+                ),
+              ),
+              onPressed: () async {
 //          await _auth.signOut();
 //          Navigator.push(
 //            context,
@@ -73,14 +75,14 @@ class _AllUserHolderState extends State<AllUserHolder> {
 //              builder: (context) => LoginScreen(),
 //            ),
 //          );
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CreateUserScreen(),
-            ),
-          );
-        },
-      ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateUserScreen(),
+                  ),
+                );
+              })
+          : Container(),
     );
   }
 }

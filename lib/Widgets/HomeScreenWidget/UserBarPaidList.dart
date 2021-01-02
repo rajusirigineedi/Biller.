@@ -13,7 +13,7 @@ class UserBarPaidList extends StatelessWidget {
     var arr = user.currentpackpaidon.split('-');
     String date = arr[2], year = arr[0];
     int month = int.parse(arr[1]);
-    print(month);
+//    print(month);
     return Padding(
       padding: EdgeInsets.only(top: 4.0, left: 4, right: 4),
       child: GestureDetector(

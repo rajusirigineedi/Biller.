@@ -38,7 +38,7 @@ class _DueBillsFragmentState extends State<DueBillsFragment> {
                     .orderBy('paidon', descending: true)
                     .get(),
                 builder: (context, snapshot) {
-                  print(">>>>>>>>invoking ");
+//                  print(">>>>>>>>invoking ");
                   if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   }

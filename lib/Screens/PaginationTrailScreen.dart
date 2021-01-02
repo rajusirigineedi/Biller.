@@ -32,11 +32,11 @@ class _PaginationTrailScreenState extends State<PaginationTrailScreen> {
       setState(() {
         bottomLoading = false;
       });
-      print('No More Products');
+//      print('No More Products');
       return;
     }
     if (bottomLoading) {
-      print("loading data . please hold on");
+//      print("loading data . please hold on");
       return;
     }
     setState(() {
@@ -56,7 +56,7 @@ class _PaginationTrailScreenState extends State<PaginationTrailScreen> {
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
           .get();
-      print(1);
+//      print(1);
     }
 
     if (querySnapshot.docs.length < documentLimit) {
@@ -77,17 +77,17 @@ class _PaginationTrailScreenState extends State<PaginationTrailScreen> {
       setState(() {
         bottomLoading = false;
       });
-      print('No More Products');
+//      print('No More Products');
       return;
     }
     if (bottomLoading) {
-      print("loading data . please hold on");
+//      print("loading data . please hold on");
       return;
     }
     setState(() {
       bottomLoading = true;
     });
-    print("targetting");
+//    print("targetting");
     QuerySnapshot querySnapshot;
     if (lastDocument == null) {
       querySnapshot = await _firestore
@@ -106,7 +106,7 @@ class _PaginationTrailScreenState extends State<PaginationTrailScreen> {
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
           .get();
-      print(1);
+//      print(1);
     }
 
     if (querySnapshot.docs.length < documentLimit) {
@@ -154,7 +154,7 @@ class _PaginationTrailScreenState extends State<PaginationTrailScreen> {
       double currentScroll = _searchScrollController.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.20;
       if (maxScroll - currentScroll <= delta) {
-        print("it is claad??");
+//        print("it is claad??");
         getSearchedUsers(searchWord);
       }
     });
@@ -199,7 +199,7 @@ class _PaginationTrailScreenState extends State<PaginationTrailScreen> {
                 : Expanded(
                     child: RefreshIndicator(
                       onRefresh: () async {
-                        print("refeshng");
+//                        print("refeshng");
                         await loadInitialData();
                       },
                       child: Column(children: [

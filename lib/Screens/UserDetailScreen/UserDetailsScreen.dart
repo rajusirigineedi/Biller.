@@ -35,25 +35,25 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       if (buttonList[i]) return widgetList[i];
   }
 
-  void upgradePack(int amount, String summary, bool isExtension) async {
+  void upgradePackMODIFIED(int amount, String summary, bool isExtension) async {
     setState(() {
       isLoading = true;
       isUpgrading = true;
     });
     try {
-      print(amount);
-      print(isExtension);
-      print(summary);
+//      print(amount);
+//      print(isExtension);
+//      print(summary);
       var batch = _firestore.batch();
       int pastAmount = 0;
       int presentAmount = 0;
 
       await _firestore.collection('admin').doc('amount').get().then((value) {
-        pastAmount = value['extensions'];
+        pastAmount = value['monthlybalance'];
       });
 
       if (isExtension) {
-        print("Extension adding");
+//        print("Extension adding");
         var currentDate = DateTime.now();
         String currmon = currentDate.month > 9
             ? '${currentDate.month}'
@@ -71,7 +71,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         // add presentAmount to pastAmount
         presentAmount = pastAmount + amount;
       } else {
-        print("changing pack");
+//        print("changing pack");
         // Updating in user
         await _firestore
             .collection('users')
@@ -86,7 +86,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
       await batch.update(
           _firestore.collection('admin').doc('amount'), <String, dynamic>{
-        'extensions': presentAmount,
+        'monthlybalance': presentAmount,
       });
 
       await batch.commit();
@@ -99,6 +99,71 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       isLoading = false;
     });
   }
+
+//  void upgradePack(int amount, String summary, bool isExtension) async {
+//    setState(() {
+//      isLoading = true;
+//      isUpgrading = true;
+//    });
+//    try {
+////      print(amount);
+////      print(isExtension);
+////      print(summary);
+//      var batch = _firestore.batch();
+//      int pastAmount = 0;
+//      int presentAmount = 0;
+//
+//      await _firestore.collection('admin').doc('amount').get().then((value) {
+//        pastAmount = value['extensions'];
+//      });
+//
+//      if (isExtension) {
+////        print("Extension adding");
+//        var currentDate = DateTime.now();
+//        String currmon = currentDate.month > 9
+//            ? '${currentDate.month}'
+//            : '0${currentDate.month}';
+//        String currdate =
+//            currentDate.day > 9 ? '${currentDate.day}' : '0${currentDate.day}';
+//        String todayDate = '${currentDate.year}-$currmon-$currdate';
+//        // updating in user
+//        await batch.update(
+//            _firestore.collection('users').doc(user.userid), <String, dynamic>{
+//          'currentpackamount': user.currentpackamount + amount,
+//          'currentpacksummary': user.currentpacksummary +
+//              ' + $amount extension pack added on $todayDate : $summary ',
+//        });
+//        // add presentAmount to pastAmount
+//        presentAmount = pastAmount + amount;
+//      } else {
+////        print("changing pack");
+//        // Updating in user
+//        await _firestore
+//            .collection('users')
+//            .doc(user.userid)
+//            .update(<String, dynamic>{
+//          'currentpackamount': amount,
+//          'currentpacksummary': summary,
+//        });
+//        // remove user.currentpack and add new pack
+//        presentAmount = pastAmount - user.currentpackamount + amount;
+//      }
+//
+//      await batch.update(
+//          _firestore.collection('admin').doc('amount'), <String, dynamic>{
+//        'extensions': presentAmount,
+//      });
+//
+//      await batch.commit();
+//      Navigator.pop(context);
+//    } catch (e) {
+//      print(e);
+//      //TODO: implement a snackbar saying something went wrong
+//    }
+//    setState(() {
+//      isLoading = false;
+//    });
+//  }
 
   void deleteUser() async {
     setState(() {
@@ -146,7 +211,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       OldBillsFragment(user),
       UserDetailsFragment(user, deleteUser),
       DueBillsFragment(user),
-      UpgradePackFragment(user, upgradePack),
+      UpgradePackFragment(user, upgradePackMODIFIED),
     ];
   }
 

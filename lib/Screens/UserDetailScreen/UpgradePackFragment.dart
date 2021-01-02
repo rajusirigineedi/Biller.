@@ -231,7 +231,7 @@ class _UpgradePackFragmentState extends State<UpgradePackFragment> {
           ),
           GestureDetector(
             onTap: () async {
-              print("clicked");
+//              print("clicked");
               if (amountEntered != null) {
                 if (amountEntered == '') return;
                 if (summary == '') return;
@@ -239,11 +239,11 @@ class _UpgradePackFragmentState extends State<UpgradePackFragment> {
                 try {
                   int val = int.parse(amountEntered.trim());
                   if (val <= 0) return;
-                  print(val);
+//                  print(val);
                   await widget.function(val, summary, isExtension);
                 } catch (e) {
                   print(e);
-                  print("Entered Amount is invalid");
+//                  print("Entered Amount is invalid");
                 }
               }
             },

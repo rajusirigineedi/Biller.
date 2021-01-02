@@ -114,7 +114,7 @@ class _UserDetailsFragmentState extends State<UserDetailsFragment> {
                     (currentUserIsAdmin)
                         ? GestureDetector(
                             onTap: () async {
-                              print("clicked");
+//                              print("clicked");
                               showDialog<void>(
                                 context: context,
                                 barrierDismissible:

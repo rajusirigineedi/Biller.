@@ -70,7 +70,7 @@ class _SearchBarState extends State<SearchBar> {
                                   widget.function(
                                       searchWord.toLowerCase(), true);
                                 }
-                                print("Search Bar in $searchWord");
+//                                print("Search Bar in $searchWord");
                               }
                             },
                             child: Container(

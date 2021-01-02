@@ -58,6 +58,163 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     return true;
   }
 
+//  Future<bool> addUser() async {
+//    setState(() {
+//      isLoading = true;
+//    });
+//
+//    bool isSuccess = await validateAllFields();
+//    if (isSuccess) {
+//      //load pack details
+//
+//      try {
+//        int basePackAmount;
+//        String basePackSummary;
+//        int fibernetUserCount;
+//        int tcnUserCount;
+//        await _firestore
+//            .collection('packs')
+//            .doc('basepack')
+//            .get()
+//            .then((value) {
+////                          print(value['fpack']);
+//          if (isfibernet) {
+//            basePackAmount = value['fpack'];
+//            basePackSummary = value['fsummary'];
+//          } else {
+//            basePackAmount = value['tpack'];
+//            basePackSummary = value['tsummary'];
+//          }
+//          fibernetUserCount = value['fcount'];
+//          tcnUserCount = value['tcount'];
+//        });
+//        var batch = _firestore.batch();
+//        await batch.set(_firestore.collection('users').doc(), {
+//          'username': userName,
+//          'phone': phoneNumber,
+//          'serial': serialNumber,
+//          'isfibernet': isfibernet,
+//          'address': address,
+//          'totaldue': 0,
+//          'currentpackamount': basePackAmount,
+//          'currentpacksummary': basePackSummary,
+//          'currentpackpaidon': '',
+//        });
+//        if (isfibernet)
+//          fibernetUserCount += 1;
+//        else
+//          tcnUserCount += 1;
+//        await batch.update(
+//            _firestore.collection('packs').doc('basepack'),
+//            <String, dynamic>{
+//              'fcount': fibernetUserCount,
+//              'tcount': tcnUserCount,
+//            });
+//        await batch.commit();
+//        setState(() {
+//          isLoading = false;
+//        });
+//        Navigator.pop(context);
+//      } catch (e) {
+//        print(e);
+//        //TODO: snackbar saying something went wrong
+//      }
+//      setState(() {
+//        isLoading = false;
+//      });
+//      return true;
+//    } else {
+//      //TODO: implement a snack bar saying Enter required values
+//      // like name, phone, serial, at least village
+//      setState(() {
+//        isLoading = false;
+//      });
+//      return false;
+//    }
+//  }
+
+  Future<bool> addUserMODIFIED() async {
+    setState(() {
+      isLoading = true;
+    });
+    bool isSuccess = await validateAllFields();
+    if (isSuccess) {
+      //load pack details
+      try {
+        int basePackAmount;
+        String basePackSummary;
+        int fibernetUserCount;
+        int tcnUserCount;
+        int pastAmount = 0;
+        int presentAmount = 0;
+        await _firestore.collection('admin').doc('amount').get().then((value) {
+          pastAmount = value['monthlybalance'];
+        });
+        await _firestore
+            .collection('packs')
+            .doc('basepack')
+            .get()
+            .then((value) {
+//                          print(value['fpack']);
+          if (isfibernet) {
+            basePackAmount = value['fpack'];
+            basePackSummary = value['fsummary'];
+          } else {
+            basePackAmount = value['tpack'];
+            basePackSummary = value['tsummary'];
+          }
+          presentAmount = pastAmount + basePackAmount;
+          fibernetUserCount = value['fcount'];
+          tcnUserCount = value['tcount'];
+        });
+        var batch = _firestore.batch();
+        await batch.set(_firestore.collection('users').doc(), {
+          'username': userName,
+          'phone': phoneNumber,
+          'serial': serialNumber,
+          'isfibernet': isfibernet,
+          'address': address,
+          'totaldue': 0,
+          'currentpackamount': basePackAmount,
+          'currentpacksummary': basePackSummary,
+          'currentpackpaidon': '',
+        });
+        if (isfibernet)
+          fibernetUserCount += 1;
+        else
+          tcnUserCount += 1;
+        await batch.update(
+            _firestore.collection('admin').doc('amount'), <String, dynamic>{
+          'monthlybalance': presentAmount,
+        });
+        await batch.update(
+            _firestore.collection('packs').doc('basepack'), <String, dynamic>{
+          'fcount': fibernetUserCount,
+          'tcount': tcnUserCount,
+        });
+        await batch.commit();
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.pop(context);
+      } catch (e) {
+        print(e);
+        //TODO: snackbar saying something went wrong
+      }
+      setState(() {
+        isLoading = false;
+      });
+      return true;
+    } else {
+      //TODO: implement a snack bar saying Enter required values
+      // like name, phone, serial, at least village
+      setState(() {
+        isLoading = false;
+      });
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -229,81 +386,8 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    print("Clicked Confirming");
-                    setState(() {
-                      isLoading = true;
-                    });
-                    bool isSuccess = await validateAllFields();
-                    if (isSuccess) {
-//                      print(userName);
-//                      print(serialNumber);
-//                      print(isfibernet);
-//                      print(phoneNumber);
-//                      print(houseNumber);
-//                      print(streetNumber);
-//                      print(landMark);
-//                      print(village);
-                      //load pack details
-
-                      try {
-                        int basePackAmount;
-                        String basePackSummary;
-                        int fibernetUserCount;
-                        int tcnUserCount;
-                        await _firestore
-                            .collection('packs')
-                            .doc('basepack')
-                            .get()
-                            .then((value) {
-                          print(value['fpack']);
-                          if (isfibernet) {
-                            basePackAmount = value['fpack'];
-                            basePackSummary = value['fsummary'];
-                          } else {
-                            basePackAmount = value['tpack'];
-                            basePackSummary = value['tsummary'];
-                          }
-                          fibernetUserCount = value['fcount'];
-                          tcnUserCount = value['tcount'];
-                        });
-                        var batch = _firestore.batch();
-                        await batch.set(_firestore.collection('users').doc(), {
-                          'username': userName,
-                          'phone': phoneNumber,
-                          'serial': serialNumber,
-                          'isfibernet': isfibernet,
-                          'address': address,
-                          'totaldue': 0,
-                          'currentpackamount': basePackAmount,
-                          'currentpacksummary': basePackSummary,
-                          'currentpackpaidon': '',
-                        });
-                        if (isfibernet)
-                          fibernetUserCount += 1;
-                        else
-                          tcnUserCount += 1;
-                        await batch.update(
-                            _firestore.collection('packs').doc('basepack'),
-                            <String, dynamic>{
-                              'fcount': fibernetUserCount,
-                              'tcount': tcnUserCount,
-                            });
-                        await batch.commit();
-                        setState(() {
-                          isLoading = false;
-                        });
-                        Navigator.pop(context);
-                      } catch (e) {
-                        print(e);
-                        //TODO: snackbar saying something went wrong
-                      }
-                      setState(() {
-                        isLoading = false;
-                      });
-                    } else {
-                      //TODO: implement a snack bar saying Enter required values
-                      // like name, phone, serial, at least village
-                    }
+//                    print("Clicked Confirming");
+                    await addUserMODIFIED();
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

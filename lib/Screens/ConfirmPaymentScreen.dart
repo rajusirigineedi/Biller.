@@ -11,6 +11,7 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ConfirmPaymentScreen extends StatefulWidget {
   final AppUser user;
@@ -44,6 +45,7 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
     int userBillWithDue = user.totaldue + user.currentpackamount;
     int thisMonthAmount = user.currentpackamount;
     int userTotalDue = user.totaldue;
+    String msg = '';
 
     try {
       var batch = _firestore.batch();
@@ -84,10 +86,12 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                   'summary': summary,
                   'paid': thatMonthToPay
                 });
-            print("making due 0");
-            print(element.id);
+//            print("making due 0");
+//            print(element.id);
           });
         });
+        msg =
+            'This month\'s amount is ₹ $thisMonthAmount, and your old due is ₹ ${user.totaldue}. You Paid ₹ $givenAmount and cleared all dues';
       } else {
         // 3 cases
         if (givenAmount <= thisMonthAmount) {
@@ -111,6 +115,12 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                 'currentpackpaidon': todayDate,
                 'totaldue': userTotalDueAfterPayment,
               });
+          if (thisMonthDue == 0)
+            msg =
+                'This month\'s amount is ₹ $thisMonthAmount. You Paid ₹ $givenAmount ';
+          else
+            msg =
+                'This month\'s amount is ₹ $thisMonthAmount. You Paid ₹ $givenAmount. This month due ₹ $thisMonthDue will be added to next month.';
         } else {
           // generate bill object with due 0,
           await batch.set(_firestore.collection('bills').doc(), {
@@ -159,7 +169,7 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                 }
               }
             }
-            print(list);
+//            print(list);
             int tempRem = remainingAmount;
             int i = 0;
             while (tempRem > 0) {
@@ -175,7 +185,7 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                       " + Due ${bill.due} cleared on $todayDate ",
                   'paid': bill.topay,
                 });
-                print('_______ Clearing $due _______ = 0');
+//                print('_______ Clearing $due _______ = 0');
               } else {
                 int stillDue = due - tempRem;
                 await batch.update(
@@ -186,12 +196,14 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                           " + Due ${tempRem} Paid on $todayDate + $stillDue remaining ",
                       'paid': tempRem,
                     });
-                print('_______ Slashing $due ________ = $stillDue');
+//                print('_______ Slashing $due ________ = $stillDue');
               }
               tempRem = tempRem - due;
               i++;
             }
           });
+          msg =
+              'This month\'s amount is ₹ $thisMonthAmount. You Paid ₹ $givenAmount and cleared some old dues. Your remaining due is $modifiedUserTotalDue.';
         }
       }
       // add amount to monthly collection
@@ -200,8 +212,11 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
         'a': givenAmount,
       });
       await batch.commit();
-      print("---------------------BAtch Successfull-----------------------");
+//      print("---------------------BAtch Successfull-----------------------");
       isSuccess = true;
+      String message = getPaymentMessage(user, msg);
+      final url = 'sms:${user.phone}?body=${message}';
+      await launch(url);
     } catch (e) {
       isSuccess = false; //TODO: implement snackbar saying something went wrong
     }
@@ -431,7 +446,7 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                   child: GestureDetector(
                     onTap: () async {
                       //TODO: implement payment functionality
-                      print("Confirm");
+//                      print("Confirm");
 //                      print(_textController.text);
                       if (_textController.text != null) {
                         if (_textController.text == '') return;
@@ -442,9 +457,11 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
                             return;
 //                          print(val);
                           bool isSuccess = await clearBill(val);
-                          if (isSuccess) Navigator.pop(context, true);
+                          if (isSuccess) {
+                            Navigator.pop(context, true);
+                          }
                         } catch (e) {
-                          print("Entered Amount is invalid");
+//                          print("Entered Amount is invalid");
                         }
                       }
                     },

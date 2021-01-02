@@ -1,3 +1,4 @@
+import 'package:biller/models/AppUser.dart';
 import 'package:flutter/material.dart';
 
 final kPrimaryColor = Color(0xff240088);
@@ -51,3 +52,9 @@ List<String> kMonthList = [
 ];
 
 enum SearchType { all, name, serial }
+
+String getPaymentMessage(AppUser user, String msg) {
+  String message =
+      'Dear ${user.username},\n$msg.\nThank You\nBalla Devendra, 9666519407\nSai Cable Network,Rameshwaram';
+  return message;
+}

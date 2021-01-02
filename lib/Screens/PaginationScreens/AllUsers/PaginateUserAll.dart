@@ -27,11 +27,11 @@ class _PaginateUserAllState extends State<PaginateUserAll> {
       setState(() {
         bottomLoading = false;
       });
-      print('No More Products');
+//      print('No More Products');
       return;
     }
     if (bottomLoading) {
-      print("loading data . please hold on");
+//      print("loading data . please hold on");
       return;
     }
     setState(() {
@@ -51,7 +51,7 @@ class _PaginateUserAllState extends State<PaginateUserAll> {
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
           .get();
-      print(1);
+//      print(1);
     }
 
     if (querySnapshot.docs.length < documentLimit) {
@@ -112,7 +112,7 @@ class _PaginateUserAllState extends State<PaginateUserAll> {
             : Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    print("refeshng");
+//                    print("refeshng");
                     await loadInitialData();
                   },
                   child: Column(children: [

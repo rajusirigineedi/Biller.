@@ -131,11 +131,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             ));
                         Navigator.pop(context);
                       } else {
-                        print("Something went wrong ! Please try Again");
+//                        print("Something went wrong ! Please try Again");
                       }
                     } catch (e) {
                       print(e);
-                      print("Invalid Username or Password");
+//                      print("Invalid Username or Password");
+                      //TODO: snackbar
                     }
 
                     setState(() {

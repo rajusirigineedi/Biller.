@@ -41,7 +41,7 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((element) {
-          print(element.id);
+//          print(element.id);
           previousMonthCollected += element['a'];
         });
       });
@@ -49,37 +49,37 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
       print(e);
     }
 
-    print('Total collected this month $previousMonthCollected');
+//    print('Total collected this month $previousMonthCollected');
     return previousMonthCollected;
   }
 
-  Future<int> getAdjustment(String previousMonthYearString) async {
-    int fibpack;
-    int tcnpack;
-    int fibernetUsers;
-    int tcnUsers;
-    int extensions;
-    int oldDue;
-    await _firestore.collection('admin').doc('amount').get().then((value) {
-      setState(() {
-        oldDue = value['duefromlastmonth'];
-        extensions = value['extensions'];
-      });
-    });
-    await _firestore.collection('packs').doc('basepack').get().then((value) {
-      fibpack = value['fpack'];
-      tcnpack = value['tpack'];
-      fibernetUsers = value['fcount'];
-      tcnUsers = value['tcount'];
-    });
-    int lastMonthCollected =
-        await getPreviousMonthCollected(previousMonthYearString);
-    int lastMonthSpent =
-        fibernetUsers * fibpack + tcnUsers * tcnpack + extensions;
-    int adjustment = lastMonthSpent - lastMonthCollected + oldDue;
-
-    return adjustment;
-  }
+//  Future<int> getAdjustment(String previousMonthYearString) async {
+//    int fibpack;
+//    int tcnpack;
+//    int fibernetUsers;
+//    int tcnUsers;
+//    int extensions;
+//    int oldDue;
+//    await _firestore.collection('admin').doc('amount').get().then((value) {
+//      setState(() {
+//        oldDue = value['duefromlastmonth'];
+//        extensions = value['extensions'];
+//      });
+//    });
+//    await _firestore.collection('packs').doc('basepack').get().then((value) {
+//      fibpack = value['fpack'];
+//      tcnpack = value['tpack'];
+//      fibernetUsers = value['fcount'];
+//      tcnUsers = value['tcount'];
+//    });
+//    int lastMonthCollected =
+//        await getPreviousMonthCollected(previousMonthYearString);
+//    int lastMonthSpent =
+//        fibernetUsers * fibpack + tcnUsers * tcnpack + extensions;
+//    int adjustment = lastMonthSpent - lastMonthCollected + oldDue;
+//
+//    return adjustment;
+//  }
 
 //  Future<int> getPreviousMonthSpentDEPRECATED() async {
 //    int fibpack;
@@ -145,10 +145,118 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
 //    return true;
 //  }
 
-  void activateNewMonth(int fibpack, int tcnpack) async {
+  Future<int> getAdjustmentMODIFIED(String previousMonthYearString) async {
+    int monthlyBalance = 0;
+    int oldDue;
+    await _firestore.collection('admin').doc('amount').get().then((value) {
+      setState(() {
+        oldDue = value['duefromlastmonth'];
+        monthlyBalance = value['monthlybalance'];
+      });
+    });
+    int lastMonthCollected =
+        await getPreviousMonthCollected(previousMonthYearString);
+    int lastMonthSpent = monthlyBalance;
+    int adjustment = lastMonthSpent - lastMonthCollected + oldDue;
+    return adjustment;
+  }
+
+//  void activateNewMonth(int fibpack, int tcnpack) async {
+//    setState(() {
+//      isLoading = true;
+//    });
+//    var currentDate = DateTime.now();
+//    var prevDate = new DateTime(currentDate.year, currentDate.month - 1, 1);
+//    String prevmon =
+//        prevDate.month > 9 ? '${prevDate.month}' : '0${prevDate.month}';
+//    String prevday = prevDate.day > 9 ? '${prevDate.day}' : '0${prevDate.day}';
+//    String previousDateString = '${prevDate.year}-$prevmon-$prevday';
+//    String previousMonthYearString = '${prevDate.year}-$prevmon';
+//
+//    String currmon = currentDate.month > 9
+//        ? '${currentDate.month}'
+//        : '0${currentDate.month}';
+//    String currday =
+//        currentDate.day > 9 ? '${currentDate.day}' : '0${currentDate.day}';
+//    String currDateString = '${currentDate.year}-$currmon-$currday';
+////    print(currDateString);
+////    print(previousDateString);
+//    try {
+//      int adjustment = await getAdjustment(previousMonthYearString);
+//      var batch = _firestore.batch();
+//      await batch.update(
+//          _firestore.collection('packs').doc('basepack'), <String, dynamic>{
+//        'fpack': fibpack,
+//        'fsummary': fsummary,
+//        'tpack': tcnpack,
+//        'tsummary': tsummary,
+//      });
+//      await _firestore.collection('users').get().then((querySnapshot) async {
+//        querySnapshot.docs.forEach((element) async {
+//          bool isfibernet = element['isfibernet'];
+//          bool currentPackPaid = element['currentpackpaidon'] != '';
+//          int userTotalDue = element['totaldue'];
+//          if (!currentPackPaid) {
+//            // generate bill object with full due,
+//            await batch.set(_firestore.collection('bills').doc(), {
+//              'amountcollected': 0,
+//              'topay': element['currentpackamount'],
+//              'paid': 0,
+//              'due': element['currentpackamount'],
+//              'paidon': previousDateString,
+//              'userid': element.id,
+//              'summary': element['currentpacksummary'] +
+//                  " + Didn't Paid + Due ${element['currentpackamount']} ",
+//            });
+//            // increment total due
+//            userTotalDue += element['currentpackamount'];
+//          }
+//          if (isfibernet) {
+//            await batch.update(
+//                _firestore.collection('users').doc(element.id),
+//                <String, dynamic>{
+//                  'currentpackamount': fibpack,
+//                  'currentpackpaidon': '',
+//                  'currentpacksummary': fsummary,
+//                  'totaldue': userTotalDue,
+//                });
+//          } else {
+//            await batch.update(
+//                _firestore.collection('users').doc(element.id),
+//                <String, dynamic>{
+//                  'currentpackamount': tcnpack,
+//                  'currentpackpaidon': '',
+//                  'currentpacksummary': tsummary,
+//                  'totaldue': userTotalDue,
+//                });
+//          }
+////          print("grabbing user");
+////          print(element.id);
+//        });
+//      });
+//      await batch.update(
+//          _firestore.collection('admin').doc('amount'), <String, dynamic>{
+//        'lastactivated': currDateString,
+//        'duefromlastmonth': adjustment,
+//        'extensions': 0,
+//      });
+//      // shift old month to new month .. since no collection it would automatically ignored
+//      await batch.commit();
+//      Navigator.pop(context, true);
+//    } catch (e) {
+//      print(e);
+//      //TODO: snackbar saying something went wrong ...
+//    }
+//    setState(() {
+//      isLoading = false;
+//    });
+//  }
+
+  void activateNewMonthMODIFIED(int fibpack, int tcnpack) async {
     setState(() {
       isLoading = true;
     });
+    int monthlyBalance = 0;
     var currentDate = DateTime.now();
     var prevDate = new DateTime(currentDate.year, currentDate.month - 1, 1);
     String prevmon =
@@ -163,10 +271,10 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
     String currday =
         currentDate.day > 9 ? '${currentDate.day}' : '0${currentDate.day}';
     String currDateString = '${currentDate.year}-$currmon-$currday';
-    print(currDateString);
-    print(previousDateString);
+//    print(currDateString);
+//    print(previousDateString);
     try {
-      int adjustment = await getAdjustment(previousMonthYearString);
+      int adjustment = await getAdjustmentMODIFIED(previousMonthYearString);
       var batch = _firestore.batch();
       await batch.update(
           _firestore.collection('packs').doc('basepack'), <String, dynamic>{
@@ -196,6 +304,7 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
             userTotalDue += element['currentpackamount'];
           }
           if (isfibernet) {
+            monthlyBalance += fibpack;
             await batch.update(
                 _firestore.collection('users').doc(element.id),
                 <String, dynamic>{
@@ -205,6 +314,7 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
                   'totaldue': userTotalDue,
                 });
           } else {
+            monthlyBalance += tcnpack;
             await batch.update(
                 _firestore.collection('users').doc(element.id),
                 <String, dynamic>{
@@ -214,15 +324,98 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
                   'totaldue': userTotalDue,
                 });
           }
-          print("grabbing user");
-          print(element.id);
+//          print("grabbing user");
+//          print(element.id);
         });
       });
       await batch.update(
           _firestore.collection('admin').doc('amount'), <String, dynamic>{
         'lastactivated': currDateString,
         'duefromlastmonth': adjustment,
-        'extensions': 0,
+        'monthlybalance': monthlyBalance
+      });
+      // shift old month to new month .. since no collection it would automatically ignored
+      await batch.commit();
+      Navigator.pop(context, true);
+    } catch (e) {
+      print(e);
+      //TODO: snackbar saying something went wrong ...
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void activateNewMonthWithPREVIOUS() async {
+    setState(() {
+      isLoading = true;
+    });
+    int monthlyBalance = 0;
+    var currentDate = DateTime.now();
+    var prevDate = new DateTime(currentDate.year, currentDate.month - 1, 1);
+    String prevmon =
+        prevDate.month > 9 ? '${prevDate.month}' : '0${prevDate.month}';
+    String prevday = prevDate.day > 9 ? '${prevDate.day}' : '0${prevDate.day}';
+    String previousDateString = '${prevDate.year}-$prevmon-$prevday';
+    String previousMonthYearString = '${prevDate.year}-$prevmon';
+
+    String currmon = currentDate.month > 9
+        ? '${currentDate.month}'
+        : '0${currentDate.month}';
+    String currday =
+        currentDate.day > 9 ? '${currentDate.day}' : '0${currentDate.day}';
+    String currDateString = '${currentDate.year}-$currmon-$currday';
+//    print(currDateString);
+//    print(previousDateString);
+    try {
+      int adjustment = await getAdjustmentMODIFIED(previousMonthYearString);
+      var batch = _firestore.batch();
+
+      await _firestore.collection('users').get().then((querySnapshot) async {
+        querySnapshot.docs.forEach((element) async {
+          bool isfibernet = element['isfibernet'];
+          bool currentPackPaid = element['currentpackpaidon'] != '';
+          int userTotalDue = element['totaldue'];
+          if (!currentPackPaid) {
+            // generate bill object with full due,
+            await batch.set(_firestore.collection('bills').doc(), {
+              'amountcollected': 0,
+              'topay': element['currentpackamount'],
+              'paid': 0,
+              'due': element['currentpackamount'],
+              'paidon': previousDateString,
+              'userid': element.id,
+              'summary': element['currentpacksummary'] +
+                  " + Didn't Paid + Due ${element['currentpackamount']} ",
+            });
+            // increment total due
+            userTotalDue += element['currentpackamount'];
+          }
+          monthlyBalance += element['currentpackamount'];
+          if (isfibernet) {
+            await batch.update(
+                _firestore.collection('users').doc(element.id),
+                <String, dynamic>{
+                  'currentpackpaidon': '',
+                  'totaldue': userTotalDue,
+                });
+          } else {
+            await batch.update(
+                _firestore.collection('users').doc(element.id),
+                <String, dynamic>{
+                  'currentpackpaidon': '',
+                  'totaldue': userTotalDue,
+                });
+          }
+//          print("grabbing user");
+//          print(element.id);
+        });
+      });
+      await batch.update(
+          _firestore.collection('admin').doc('amount'), <String, dynamic>{
+        'lastactivated': currDateString,
+        'duefromlastmonth': adjustment,
+        'monthlybalance': monthlyBalance
       });
       // shift old month to new month .. since no collection it would automatically ignored
       await batch.commit();
@@ -354,6 +547,38 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
                 ),
                 GestureDetector(
                   onTap: () async {
+                    await activateNewMonthWithPREVIOUS();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: Container(
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                'Activate With Previous',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            height: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              color: kPrimaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () async {
                     bool validationSuccess = await validateAllFields();
                     if (!validationSuccess) return;
                     int fibpack, tcnpack;
@@ -366,38 +591,19 @@ class _NewMonthActivationState extends State<NewMonthActivation> {
                     }
                     if (fibpack <= 0 || tcnpack <= 0) return;
                     // We are free from all edge conditions
-                    await activateNewMonth(fibpack, tcnpack);
+                    await activateNewMonthMODIFIED(fibpack, tcnpack);
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                       children: [
                         Expanded(
-                          flex: 1,
-                          child: Container(
-                            height: 60,
-                            child: Center(
-                              child: Icon(
-                                LineIcons.sign_in,
-                                color: Colors.white,
-                              ),
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 16,
-                        ),
-                        Expanded(
                           flex: 4,
                           child: Container(
                             width: double.infinity,
                             child: Center(
                               child: Text(
-                                'Activate',
+                                'Activate with New Packs',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,

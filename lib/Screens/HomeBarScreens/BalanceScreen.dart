@@ -30,48 +30,82 @@ class _BalanceScreenState extends State<BalanceScreen> {
   bool packActivated = true;
   DateTime _currentDate;
 
-  Future<bool> getThisMonthSpentDEPRECATED() async {
-    int fibpack;
-    int tcnpack;
-    int fibernetUsers;
-    int tcnUsers;
-    await _firestore
-        .collection('users')
-        .where('isfibernet', isEqualTo: true)
-        .get()
-        .then((value) {
-      fibernetUsers = value.docs.length;
-    });
-    await _firestore
-        .collection('users')
-        .where('isfibernet', isEqualTo: false)
-        .get()
-        .then((value) {
-      tcnUsers = value.docs.length;
-    });
-    await _firestore.collection('packs').doc('basepack').get().then((value) {
-      fibpack = value['fpack'];
-      tcnpack = value['tpack'];
-    });
-    int amount = fibernetUsers * fibpack + tcnUsers * tcnpack;
-    setState(() {
-      thisMonthSpent = amount;
-    });
-    return true;
-  }
+//  Future<bool> getThisMonthSpentDEPRECATED() async {
+//    int fibpack;
+//    int tcnpack;
+//    int fibernetUsers;
+//    int tcnUsers;
+//    await _firestore
+//        .collection('users')
+//        .where('isfibernet', isEqualTo: true)
+//        .get()
+//        .then((value) {
+//      fibernetUsers = value.docs.length;
+//    });
+//    await _firestore
+//        .collection('users')
+//        .where('isfibernet', isEqualTo: false)
+//        .get()
+//        .then((value) {
+//      tcnUsers = value.docs.length;
+//    });
+//    await _firestore.collection('packs').doc('basepack').get().then((value) {
+//      fibpack = value['fpack'];
+//      tcnpack = value['tpack'];
+//    });
+//    int amount = fibernetUsers * fibpack + tcnUsers * tcnpack;
+//    setState(() {
+//      thisMonthSpent = amount;
+//    });
+//    return true;
+//  }
 
-  Future<bool> getThisMonthSpent(String searchDate) async {
+//  Future<bool> getThisMonthSpent(String searchDate) async {
+//    try {
+//      int fibpack;
+//      int tcnpack;
+//      int fibernetUsers;
+//      int tcnUsers;
+//      int extensions;
+//      await _firestore.collection('admin').doc('amount').get().then((value) {
+//        setState(() {
+//          dueFromLastMonth = value['duefromlastmonth'];
+//          lastActivated = value['lastactivated'];
+//          extensions = value['extensions'];
+//        });
+//      });
+//      var la = lastActivated.substring(0, 7);
+//      var sd = searchDate.substring(0, 7);
+//      setState(() {
+//        packActivated = la.compareTo(sd) >= 0;
+//      });
+////      print(la);
+////      print(sd);
+//      await _firestore.collection('packs').doc('basepack').get().then((value) {
+//        fibpack = value['fpack'];
+//        tcnpack = value['tpack'];
+//        fibernetUsers = value['fcount'];
+//        tcnUsers = value['tcount'];
+//      });
+//      int amount = fibernetUsers * fibpack + tcnUsers * tcnpack + extensions;
+//      setState(() {
+//        thisMonthSpent = amount;
+//      });
+//    } catch (e) {
+//      print(e);
+//      //TODO: same snackbar story
+//    }
+//    return true;
+//  }
+
+  Future<bool> getThisMonthSpentMODIFIED(String searchDate) async {
     try {
-      int fibpack;
-      int tcnpack;
-      int fibernetUsers;
-      int tcnUsers;
-      int extensions;
+      int monthlyBalance;
       await _firestore.collection('admin').doc('amount').get().then((value) {
         setState(() {
           dueFromLastMonth = value['duefromlastmonth'];
           lastActivated = value['lastactivated'];
-          extensions = value['extensions'];
+          monthlyBalance = value['monthlybalance'];
         });
       });
       var la = lastActivated.substring(0, 7);
@@ -79,15 +113,9 @@ class _BalanceScreenState extends State<BalanceScreen> {
       setState(() {
         packActivated = la.compareTo(sd) >= 0;
       });
-      print(la);
-      print(sd);
-      await _firestore.collection('packs').doc('basepack').get().then((value) {
-        fibpack = value['fpack'];
-        tcnpack = value['tpack'];
-        fibernetUsers = value['fcount'];
-        tcnUsers = value['tcount'];
-      });
-      int amount = fibernetUsers * fibpack + tcnUsers * tcnpack + extensions;
+//      print(la);
+//      print(sd);
+      int amount = monthlyBalance;
       setState(() {
         thisMonthSpent = amount;
       });
@@ -112,34 +140,34 @@ class _BalanceScreenState extends State<BalanceScreen> {
     setState(() {
       todayCollection = thisDayCollected;
     });
-    print('Total collected this day $thisDayCollected');
+//    print('Total collected this day $thisDayCollected');
     return true;
   }
 
-  Future<bool> calculateThisMonthCollectedDEPRECATED() async {
-    int thisMonthCollected = 0;
-
-    String searchWord = yearMonthString;
-    await _firestore
-        .collection('bills')
-        .orderBy('paidon')
-        .startAt([searchWord])
-        .endAt([searchWord + '\uf8ff'])
-        .get()
-        .then((querySnapshot) {
-          querySnapshot.docs.forEach((element) {
-            print(element.id);
-            thisMonthCollected += element['amountcollected'];
-          });
-        });
-
-    setState(() {
-      monthCollection = thisMonthCollected;
-    });
-
-    print('Total collected this month $thisMonthCollected');
-    return true;
-  }
+//  Future<bool> calculateThisMonthCollectedDEPRECATED() async {
+//    int thisMonthCollected = 0;
+//
+//    String searchWord = yearMonthString;
+//    await _firestore
+//        .collection('bills')
+//        .orderBy('paidon')
+//        .startAt([searchWord])
+//        .endAt([searchWord + '\uf8ff'])
+//        .get()
+//        .then((querySnapshot) {
+//          querySnapshot.docs.forEach((element) {
+////            print(element.id);
+//            thisMonthCollected += element['amountcollected'];
+//          });
+//        });
+//
+//    setState(() {
+//      monthCollection = thisMonthCollected;
+//    });
+//
+////    print('Total collected this month $thisMonthCollected');
+//    return true;
+//  }
 
   Future<bool> calculateThisMonthCollected() async {
     int thisMonthCollected = 0;
@@ -150,13 +178,13 @@ class _BalanceScreenState extends State<BalanceScreen> {
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((element) {
-          print(element.id);
+//          print(element.id);
           thisMonthCollected += element['a'];
         });
       });
     } catch (e) {
       // doc isn't available might be new pack activated
-      print('doc isn\'t available might be new pack activated');
+//      print('doc isn\'t available might be new pack activated');
       print(e);
     }
 
@@ -164,7 +192,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
       monthCollection = thisMonthCollected;
     });
 
-    print('Total collected this month $thisMonthCollected');
+//    print('Total collected this month $thisMonthCollected');
     return true;
   }
 
@@ -173,7 +201,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
       isLoading = true;
     });
     try {
-      await getThisMonthSpent(searchDate); // speedy cn
+      await getThisMonthSpentMODIFIED(searchDate); // speedy cn
       await calculateThisMonthCollected(); // somewhat speedy
       await calculateThisDayTotal(searchDate); // somewhat speedy
     } catch (e) {
@@ -463,7 +491,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
                                         : '0${currentDate.day}';
                                     String todayDate =
                                         '${currentDate.year}-$currmon-$currdate';
-                                    print(todayDate);
+//                                    print(todayDate);
                                     setState(() {
                                       dateString = currentDate.day;
                                       month = currentDate.month;
