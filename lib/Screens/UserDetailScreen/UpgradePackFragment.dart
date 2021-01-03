@@ -6,8 +6,10 @@ import 'package:line_icons/line_icons.dart';
 
 class UpgradePackFragment extends StatefulWidget {
   final AppUser user;
-  final Function function;
-  UpgradePackFragment(this.user, this.function);
+  final Function upgradePackBeforePayment;
+  final Function upgradePackAfterPayment;
+  UpgradePackFragment(
+      this.user, this.upgradePackBeforePayment, this.upgradePackAfterPayment);
 
   @override
   _UpgradePackFragmentState createState() => _UpgradePackFragmentState();
@@ -189,38 +191,41 @@ class _UpgradePackFragmentState extends State<UpgradePackFragment> {
                           SizedBox(
                             width: 8,
                           ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isExtension = false;
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 28, vertical: 18),
-                                width: double.infinity,
-                                child: Center(
-                                  child: Text(
-                                    'Change Pack',
-                                    style: TextStyle(
-                                      color: isExtension
-                                          ? kPrimaryColor
-                                          : Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                          (user.currentpackpaidon == '')
+                              ? Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        isExtension = false;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 28, vertical: 18),
+                                      width: double.infinity,
+                                      child: Center(
+                                        child: Text(
+                                          'Change Pack',
+                                          style: TextStyle(
+                                            color: isExtension
+                                                ? kPrimaryColor
+                                                : Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        color: isExtension
+                                            ? kDimBackgroundColor
+                                            : kPrimaryColor,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  color: isExtension
-                                      ? kDimBackgroundColor
-                                      : kPrimaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),
@@ -240,7 +245,12 @@ class _UpgradePackFragmentState extends State<UpgradePackFragment> {
                   int val = int.parse(amountEntered.trim());
                   if (val <= 0) return;
 //                  print(val);
-                  await widget.function(val, summary, isExtension);
+                  if (user.currentpackpaidon == '') {
+                    await widget.upgradePackBeforePayment(
+                        val, summary, isExtension);
+                  } else {
+                    await widget.upgradePackAfterPayment(val, summary);
+                  }
                 } catch (e) {
                   print(e);
 //                  print("Entered Amount is invalid");

@@ -28,7 +28,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   bool isLoading = false;
   String upgradeMessage = 'Upgrading Pack\nPlease Wait';
   String deletingMessage = 'Deleting User\nPlease Wait';
-  bool isUpgrading = true;
+  bool isUpgrading =
+      true; // to differentiate msgs for deleting user and upgrading pack
 
   Widget getCorrectWidget() {
     for (int i = 0; i < buttonList.length; i++)
@@ -66,7 +67,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             _firestore.collection('users').doc(user.userid), <String, dynamic>{
           'currentpackamount': user.currentpackamount + amount,
           'currentpacksummary': user.currentpacksummary +
-              ' + $amount extension pack added on $todayDate : $summary ',
+              ' + $amount extension pack added from $todayDate : $summary ',
         });
         // add presentAmount to pastAmount
         presentAmount = pastAmount + amount;
@@ -87,6 +88,97 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       await batch.update(
           _firestore.collection('admin').doc('amount'), <String, dynamic>{
         'monthlybalance': presentAmount,
+      });
+
+      await batch.commit();
+      Navigator.pop(context);
+    } catch (e) {
+      print(e);
+      //TODO: implement a snackbar saying something went wrong
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void upgradePackAfterPayment(int amount, String summary) async {
+    setState(() {
+      isLoading = true;
+      isUpgrading = true;
+    });
+    try {
+      var batch = _firestore.batch();
+      // ---------------------------- monthly bal -------------------
+      int pastAmount = 0;
+      int presentAmount = 0;
+
+      await _firestore.collection('admin').doc('amount').get().then((value) {
+        pastAmount = value['monthlybalance'];
+      });
+
+      presentAmount = pastAmount + amount;
+
+      await batch.update(
+          _firestore.collection('admin').doc('amount'), <String, dynamic>{
+        'monthlybalance': presentAmount,
+      });
+
+      // -------------------------- Updating in bill object --------------------
+
+      var currentDate = DateTime.now();
+      String currmon = currentDate.month > 9
+          ? '${currentDate.month}'
+          : '0${currentDate.month}';
+      String currdate =
+          currentDate.day > 9 ? '${currentDate.day}' : '0${currentDate.day}';
+      String todayDate = '${currentDate.year}-$currmon-$currdate';
+
+      // get last bill document
+      var lastDocumentID;
+      var dueBefore = 0;
+      var dueAfter = 0;
+      var toPayBefore = 0;
+      var toPayAfter = 0;
+      var summaryBefore = '';
+      var summaryAfter = '';
+      await _firestore
+          .collection("bills")
+          .where('userid', isEqualTo: user.userid)
+          .orderBy('paidon', descending: true)
+          .limit(1)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((element) {
+          lastDocumentID = element.id;
+          dueBefore = element['due'];
+          toPayBefore = element['topay'];
+          summaryBefore = element['summary'];
+        });
+      });
+      dueAfter = dueBefore + amount;
+      toPayAfter = toPayBefore + amount;
+      summaryAfter = summaryBefore +
+          " + $amount extension pack activated from $todayDate : $summary ";
+
+      await batch.update(
+          _firestore.collection('bills').doc(lastDocumentID), <String, dynamic>{
+        'due': dueAfter,
+        'topay': toPayAfter,
+        'summary': summaryAfter
+      });
+
+      // ---------------------------update in user --------------------
+
+      int packAmountAfter = user.currentpackamount + amount;
+      String packSummaryAfter = user.currentpacksummary +
+          " + $amount extension pack activated from $todayDate : $summary ";
+      int totalDueAfter = user.totaldue + amount;
+
+      await batch.update(
+          _firestore.collection('users').doc(user.userid), <String, dynamic>{
+        'totaldue': totalDueAfter,
+        'currentpackamount': packAmountAfter,
+        'currentpacksummary': packSummaryAfter
       });
 
       await batch.commit();
@@ -211,7 +303,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       OldBillsFragment(user),
       UserDetailsFragment(user, deleteUser),
       DueBillsFragment(user),
-      UpgradePackFragment(user, upgradePackMODIFIED),
+      UpgradePackFragment(user, upgradePackMODIFIED, upgradePackAfterPayment),
     ];
   }
 
@@ -296,8 +388,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                   buttonList[3] = true;
                                 });
                               }),
-                              (currentUserIsAdmin &&
-                                      user.currentpackpaidon == '')
+                              (currentUserIsAdmin)
                                   ? ListingButton('Upgrade Pack', buttonList[4],
                                       () {
                                       setState(() {

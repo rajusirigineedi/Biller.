@@ -24,6 +24,8 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   String landMark;
   String village;
   String address;
+  String oldDueBeforeApp;
+  int dueToAdd = 0;
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
@@ -36,6 +38,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     userName = userName.trim().toLowerCase();
     serialNumber = serialNumber.trim();
     phoneNumber = phoneNumber.trim();
+    if (userName == '' || serialNumber == '' || phoneNumber == '') return false;
     address = '';
     if (village != null) {
       village = village.trim();
@@ -55,6 +58,24 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     }
     if (address == '') return false;
     address = address.substring(0, address.length - 2);
+    if (oldDueBeforeApp == null || oldDueBeforeApp == '') {
+      setState(() {
+        dueToAdd = 0;
+      });
+    } else {
+      oldDueBeforeApp = oldDueBeforeApp.trim();
+      try {
+        setState(() {
+          dueToAdd = int.parse(oldDueBeforeApp);
+        });
+      } catch (e) {
+//        print(e);
+        setState(() {
+          dueToAdd = 0;
+        });
+        return false;
+      }
+    }
     return true;
   }
 
@@ -133,6 +154,88 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
 //    }
 //  }
 
+//  Future<bool> addUserMODIFIED() async {
+//    setState(() {
+//      isLoading = true;
+//    });
+//    bool isSuccess = await validateAllFields();
+//    if (isSuccess) {
+//      //load pack details
+//      try {
+//        int basePackAmount;
+//        String basePackSummary;
+//        int fibernetUserCount;
+//        int tcnUserCount;
+//        int pastAmount = 0;
+//        int presentAmount = 0;
+//        await _firestore.collection('admin').doc('amount').get().then((value) {
+//          pastAmount = value['monthlybalance'];
+//        });
+//        await _firestore
+//            .collection('packs')
+//            .doc('basepack')
+//            .get()
+//            .then((value) {
+////                          print(value['fpack']);
+//          if (isfibernet) {
+//            basePackAmount = value['fpack'];
+//            basePackSummary = value['fsummary'];
+//          } else {
+//            basePackAmount = value['tpack'];
+//            basePackSummary = value['tsummary'];
+//          }
+//          presentAmount = pastAmount + basePackAmount;
+//          fibernetUserCount = value['fcount'];
+//          tcnUserCount = value['tcount'];
+//        });
+//        var batch = _firestore.batch();
+//        await batch.set(_firestore.collection('users').doc(), {
+//          'username': userName,
+//          'phone': phoneNumber,
+//          'serial': serialNumber,
+//          'isfibernet': isfibernet,
+//          'address': address,
+//          'totaldue': 0,
+//          'currentpackamount': basePackAmount,
+//          'currentpacksummary': basePackSummary,
+//          'currentpackpaidon': '',
+//        });
+//        if (isfibernet)
+//          fibernetUserCount += 1;
+//        else
+//          tcnUserCount += 1;
+//        await batch.update(
+//            _firestore.collection('admin').doc('amount'), <String, dynamic>{
+//          'monthlybalance': presentAmount,
+//        });
+//        await batch.update(
+//            _firestore.collection('packs').doc('basepack'), <String, dynamic>{
+//          'fcount': fibernetUserCount,
+//          'tcount': tcnUserCount,
+//        });
+//        await batch.commit();
+//        setState(() {
+//          isLoading = false;
+//        });
+//        Navigator.pop(context);
+//      } catch (e) {
+//        print(e);
+//        //TODO: snackbar saying something went wrong
+//      }
+//      setState(() {
+//        isLoading = false;
+//      });
+//      return true;
+//    } else {
+//      //TODO: implement a snack bar saying Enter required values
+//      // like name, phone, serial, at least village
+//      setState(() {
+//        isLoading = false;
+//      });
+//      return false;
+//    }
+//  }
+
   Future<bool> addUserMODIFIED() async {
     setState(() {
       isLoading = true;
@@ -147,8 +250,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         int tcnUserCount;
         int pastAmount = 0;
         int presentAmount = 0;
+        int dueFromLastMonth = 0;
         await _firestore.collection('admin').doc('amount').get().then((value) {
           pastAmount = value['monthlybalance'];
+          dueFromLastMonth = value['duefromlastmonth'];
         });
         await _firestore
             .collection('packs')
@@ -168,17 +273,30 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           tcnUserCount = value['tcount'];
         });
         var batch = _firestore.batch();
-        await batch.set(_firestore.collection('users').doc(), {
+        await batch.set(_firestore.collection('users').doc(serialNumber), {
           'username': userName,
           'phone': phoneNumber,
           'serial': serialNumber,
           'isfibernet': isfibernet,
           'address': address,
-          'totaldue': 0,
+          'totaldue': dueToAdd,
           'currentpackamount': basePackAmount,
           'currentpacksummary': basePackSummary,
           'currentpackpaidon': '',
         });
+        if (dueToAdd > 0) {
+          //create bill object and add to last month due
+          await batch.set(_firestore.collection('bills').doc(), {
+            'amountcollected': 0,
+            'topay': dueToAdd,
+            'paid': 0,
+            'due': dueToAdd,
+            'paidon': '2020-10-01',
+            'userid': serialNumber,
+            'summary': '$dueToAdd Old Due before Using App',
+          });
+          dueFromLastMonth = dueFromLastMonth + dueToAdd;
+        }
         if (isfibernet)
           fibernetUserCount += 1;
         else
@@ -186,6 +304,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         await batch.update(
             _firestore.collection('admin').doc('amount'), <String, dynamic>{
           'monthlybalance': presentAmount,
+          'duefromlastmonth': dueFromLastMonth
         });
         await batch.update(
             _firestore.collection('packs').doc('basepack'), <String, dynamic>{
@@ -378,6 +497,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                           CustomLengthField(LineIcons.globe, 'Village',
                               (value) {
                             village = value;
+                          }),
+                          FullLengthField(LineIcons.money, 'Old Due Before App',
+                              (value) {
+                            oldDueBeforeApp = value;
                           }),
                         ],
                       ),
