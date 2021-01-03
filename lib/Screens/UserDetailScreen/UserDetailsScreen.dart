@@ -11,6 +11,7 @@ import 'package:biller/models/AppUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   AppUser user;
@@ -28,18 +29,61 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   bool isLoading = false;
   String upgradeMessage = 'Upgrading Pack\nPlease Wait';
   String deletingMessage = 'Deleting User\nPlease Wait';
-  bool isUpgrading =
-      true; // to differentiate msgs for deleting user and upgrading pack
+  String sendingMessage = 'Sending Message\nPlease Wait';
+  String suitableMessage = '';
 
   Widget getCorrectWidget() {
     for (int i = 0; i < buttonList.length; i++)
       if (buttonList[i]) return widgetList[i];
   }
 
+  void sendLastPaidMessage() async {
+    setState(() {
+      isLoading = true;
+      suitableMessage = sendingMessage;
+    });
+    try {
+      int due = 0;
+      int packAmount = 0;
+      int paid = 0;
+      //get last bill doc ..
+      await _firestore
+          .collection("bills")
+          .where('userid', isEqualTo: user.userid)
+          .orderBy('paidon', descending: true)
+          .limit(1)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((element) {
+          due = element['due'];
+          packAmount = element['topay'];
+          paid = element['paid'];
+        });
+      });
+
+      String msg = '';
+      if (due == 0) {
+        msg = 'This month\'s amount is ₹ $packAmount, You paid ₹ $paid. ';
+      } else {
+        msg =
+            'This month\'s amount is ₹ $packAmount, You paid ₹ $paid. And due is $due. ';
+      }
+      String message = getPaymentMessage(user, msg);
+      final url = 'sms:${user.phone}?body=$message';
+      await launch(url);
+    } catch (e) {
+//      print(e);
+      //TODO: snackbar
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   void upgradePackMODIFIED(int amount, String summary, bool isExtension) async {
     setState(() {
       isLoading = true;
-      isUpgrading = true;
+      suitableMessage = upgradeMessage;
     });
     try {
 //      print(amount);
@@ -104,7 +148,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   void upgradePackAfterPayment(int amount, String summary) async {
     setState(() {
       isLoading = true;
-      isUpgrading = true;
+      suitableMessage = upgradeMessage;
     });
     try {
       var batch = _firestore.batch();
@@ -260,7 +304,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   void deleteUser() async {
     setState(() {
       isLoading = true;
-      isUpgrading = false;
+      suitableMessage = deletingMessage;
     });
     try {
       int fibernetUserCount;
@@ -299,7 +343,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     super.initState();
     user = widget.user;
     widgetList = [
-      MonthlyBillFragment(user),
+      MonthlyBillFragment(user, sendLastPaidMessage),
       OldBillsFragment(user),
       UserDetailsFragment(user, deleteUser),
       DueBillsFragment(user),
@@ -417,9 +461,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ],
               ),
             ),
-            isLoading
-                ? LoadingScreen(isUpgrading ? upgradeMessage : deletingMessage)
-                : Container(),
+            isLoading ? LoadingScreen(suitableMessage) : Container(),
           ],
         ));
   }

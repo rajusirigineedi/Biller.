@@ -36,7 +36,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     if (userName == null || serialNumber == null || phoneNumber == null)
       return false;
     userName = userName.trim().toLowerCase();
-    serialNumber = serialNumber.trim();
+    serialNumber = serialNumber.trim().toLowerCase();
     phoneNumber = phoneNumber.trim();
     if (userName == '' || serialNumber == '' || phoneNumber == '') return false;
     address = '';

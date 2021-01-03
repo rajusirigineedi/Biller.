@@ -67,8 +67,13 @@ class _SearchBarState extends State<SearchBar> {
                                   widget.function(searchWord.toLowerCase());
                                 } catch (e) {
                                   print(e);
-                                  widget.function(
-                                      searchWord.toLowerCase(), true);
+                                  if (searchWord.length >= 4 &&
+                                      searchWord.substring(0, 4) == 'dsnw') {
+                                    widget.function(searchWord.toLowerCase());
+                                  } else {
+                                    widget.function(
+                                        searchWord.toLowerCase(), true);
+                                  }
                                 }
 //                                print("Search Bar in $searchWord");
                               }

@@ -4,10 +4,12 @@ import 'package:biller/Widgets/UserDetailScreenWidgets/DetailBar.dart';
 import 'package:biller/models/AppUser.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MonthlyBillFragment extends StatefulWidget {
-  AppUser user;
-  MonthlyBillFragment(this.user);
+  final AppUser user;
+  final Function sendMessage;
+  MonthlyBillFragment(this.user, this.sendMessage);
   @override
   _MonthlyBillFragmentState createState() => _MonthlyBillFragmentState();
 }
@@ -97,6 +99,7 @@ class _MonthlyBillFragmentState extends State<MonthlyBillFragment> {
             onTap: () async {
               if (currentPackPaid) {
                 // TODO: implement bill printing page
+                await widget.sendMessage();
               } else {
                 //TODO: call confirm page
                 bool isSuccess = await Navigator.push(

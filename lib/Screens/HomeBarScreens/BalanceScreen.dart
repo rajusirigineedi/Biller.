@@ -30,6 +30,19 @@ class _BalanceScreenState extends State<BalanceScreen> {
   bool packActivated = true;
   DateTime _currentDate;
 
+  int fibernetUsers = 0;
+  int tcnUsers = 0;
+
+  Future<bool> getUsersCount() async {
+    await _firestore.collection('packs').doc('basepack').get().then((value) {
+      setState(() {
+        fibernetUsers = value['fcount'];
+        tcnUsers = value['tcount'];
+      });
+    });
+    return true;
+  }
+
 //  Future<bool> getThisMonthSpentDEPRECATED() async {
 //    int fibpack;
 //    int tcnpack;
@@ -203,7 +216,8 @@ class _BalanceScreenState extends State<BalanceScreen> {
     try {
       await getThisMonthSpentMODIFIED(searchDate); // speedy cn
       await calculateThisMonthCollected(); // somewhat speedy
-      await calculateThisDayTotal(searchDate); // somewhat speedy
+      await calculateThisDayTotal(searchDate); // somew
+      await getUsersCount(); // hat speedy
     } catch (e) {
       print(e);
     }
@@ -553,6 +567,77 @@ class _BalanceScreenState extends State<BalanceScreen> {
                                   color: Colors.tealAccent,
                                   fontSize: 16,
                                 ),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 120,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'FIBERNET',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          Text(
+                                            '$fibernetUsers',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 28,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        color: kPrimaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 16,
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      height: 120,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'TCN',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          Text(
+                                            '$tcnUsers',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 28,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        color: kSecondaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
