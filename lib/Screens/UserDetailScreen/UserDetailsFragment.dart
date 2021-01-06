@@ -4,6 +4,8 @@ import 'package:biller/Widgets/UserDetailScreenWidgets/DetailBar.dart';
 import 'package:biller/models/AppUser.dart';
 import 'package:flutter/material.dart';
 
+import '../EditProfileScreen.dart';
+
 class UserDetailsFragment extends StatefulWidget {
   final AppUser user;
   final Function function;
@@ -111,6 +113,41 @@ class _UserDetailsFragmentState extends State<UserDetailsFragment> {
 //                        ),
 //                      ),
 //                    ),
+                    (currentUserIsAdmin)
+                        ? GestureDetector(
+                            onTap: () async {
+//                              print("clicked");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfileScreen(user),
+                                ),
+                              );
+//                        await widget.function();
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 14),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 34, vertical: 16),
+                                child: Center(
+                                  child: Text(
+                                    'Edit Details',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
                     (currentUserIsAdmin)
                         ? GestureDetector(
                             onTap: () async {
@@ -235,6 +272,7 @@ class _UserDetailsFragmentState extends State<UserDetailsFragment> {
                             ),
                           )
                         : Container(),
+
                     SizedBox(
                       height: 16,
                     ),

@@ -22,8 +22,10 @@ class AppUser {
       this.currentpackpaidon,
       this.userid) {
     var arr = username.split(' ');
+//    print(arr);
     String res = '';
     for (int i = 0; i < arr.length; i++) {
+      if (arr[i] == '') continue;
       res = res + arr[i][0].toUpperCase() + arr[i].substring(1) + " ";
     }
     this.username = res.substring(0, res.length - 1);

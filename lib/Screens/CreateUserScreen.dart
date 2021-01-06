@@ -470,7 +470,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                             BorderRadius.circular(8.0),
                                         color: isfibernet
                                             ? kDimBackgroundColor
-                                            : kPrimaryColor,
+                                            : kSecondaryColor,
                                       ),
                                     ),
                                   ),
