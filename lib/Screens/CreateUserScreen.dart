@@ -26,6 +26,8 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   String address;
   String oldDueBeforeApp;
   int dueToAdd = 0;
+  int userNumber = 0;
+  bool adding = false;
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
@@ -239,6 +241,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   Future<bool> addUserMODIFIED() async {
     setState(() {
       isLoading = true;
+      adding = true;
     });
     bool isSuccess = await validateAllFields();
     if (isSuccess) {
@@ -273,7 +276,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           tcnUserCount = value['tcount'];
         });
         var batch = _firestore.batch();
-        await batch.set(_firestore.collection('users').doc(serialNumber), {
+        await batch.set(_firestore.collection('users').doc('$userNumber'), {
           'username': userName,
           'phone': phoneNumber,
           'serial': serialNumber,
@@ -283,6 +286,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           'currentpackamount': basePackAmount,
           'currentpacksummary': basePackSummary,
           'currentpackpaidon': '',
+          'id': userNumber,
         });
         if (dueToAdd > 0) {
           //create bill object and add to last month due
@@ -292,7 +296,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             'paid': 0,
             'due': dueToAdd,
             'paidon': '2020-10-01',
-            'userid': serialNumber,
+            'userid': '$userNumber',
             'summary': '$dueToAdd Old Due before Using App',
           });
           dueFromLastMonth = dueFromLastMonth + dueToAdd;
@@ -310,9 +314,11 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             _firestore.collection('packs').doc('basepack'), <String, dynamic>{
           'fcount': fibernetUserCount,
           'tcount': tcnUserCount,
+          'usernumber': userNumber + 1,
         });
         await batch.commit();
         setState(() {
+          adding = false;
           isLoading = false;
         });
         Navigator.pop(context);
@@ -321,6 +327,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         //TODO: snackbar saying something went wrong
       }
       setState(() {
+        adding = false;
         isLoading = false;
       });
       return true;
@@ -328,10 +335,40 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
       //TODO: implement a snack bar saying Enter required values
       // like name, phone, serial, at least village
       setState(() {
+        adding = false;
         isLoading = false;
       });
       return false;
     }
+  }
+
+  Future<bool> loadUserNumber() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await _firestore.collection('packs').doc('basepack').get().then((value) {
+        userNumber = value['usernumber'];
+        print('>>>>>>>>>>');
+        print(userNumber);
+      });
+    } catch (e) {
+//      print(e);
+      print("sone isssssue ");
+      Navigator.pop(context);
+    }
+
+    await setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadUserNumber());
   }
 
   @override
@@ -381,7 +418,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                 height: 4,
                               ),
                               Text(
-                                'Add New Customer',
+                                'Add New Customer $userNumber',
                                 style: TextStyle(
                                   color: kPrimaryColor,
                                   fontWeight: FontWeight.bold,
@@ -563,7 +600,9 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             ),
           ),
           isLoading
-              ? LoadingScreen('Adding customer\nPlease Wait')
+              ? LoadingScreen(adding
+                  ? 'Adding customer\nPlease Wait'
+                  : 'Getting Customer Number\nPlease Wait')
               : Container(),
         ],
       ),

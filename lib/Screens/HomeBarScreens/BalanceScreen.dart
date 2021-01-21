@@ -32,6 +32,18 @@ class _BalanceScreenState extends State<BalanceScreen> {
 
   int fibernetUsers = 0;
   int tcnUsers = 0;
+  int percentage = 0;
+
+  void calculatePercentage() async {
+    setState(() {
+      int got = monthCollection;
+      int toget = thisMonthSpent + dueFromLastMonth;
+      percentage = (got * 100 / toget).round();
+      print(got);
+      print(toget);
+      print('<<<<<<<<<<<');
+    });
+  }
 
   Future<bool> getUsersCount() async {
     await _firestore.collection('packs').doc('basepack').get().then((value) {
@@ -42,74 +54,6 @@ class _BalanceScreenState extends State<BalanceScreen> {
     });
     return true;
   }
-
-//  Future<bool> getThisMonthSpentDEPRECATED() async {
-//    int fibpack;
-//    int tcnpack;
-//    int fibernetUsers;
-//    int tcnUsers;
-//    await _firestore
-//        .collection('users')
-//        .where('isfibernet', isEqualTo: true)
-//        .get()
-//        .then((value) {
-//      fibernetUsers = value.docs.length;
-//    });
-//    await _firestore
-//        .collection('users')
-//        .where('isfibernet', isEqualTo: false)
-//        .get()
-//        .then((value) {
-//      tcnUsers = value.docs.length;
-//    });
-//    await _firestore.collection('packs').doc('basepack').get().then((value) {
-//      fibpack = value['fpack'];
-//      tcnpack = value['tpack'];
-//    });
-//    int amount = fibernetUsers * fibpack + tcnUsers * tcnpack;
-//    setState(() {
-//      thisMonthSpent = amount;
-//    });
-//    return true;
-//  }
-
-//  Future<bool> getThisMonthSpent(String searchDate) async {
-//    try {
-//      int fibpack;
-//      int tcnpack;
-//      int fibernetUsers;
-//      int tcnUsers;
-//      int extensions;
-//      await _firestore.collection('admin').doc('amount').get().then((value) {
-//        setState(() {
-//          dueFromLastMonth = value['duefromlastmonth'];
-//          lastActivated = value['lastactivated'];
-//          extensions = value['extensions'];
-//        });
-//      });
-//      var la = lastActivated.substring(0, 7);
-//      var sd = searchDate.substring(0, 7);
-//      setState(() {
-//        packActivated = la.compareTo(sd) >= 0;
-//      });
-////      print(la);
-////      print(sd);
-//      await _firestore.collection('packs').doc('basepack').get().then((value) {
-//        fibpack = value['fpack'];
-//        tcnpack = value['tpack'];
-//        fibernetUsers = value['fcount'];
-//        tcnUsers = value['tcount'];
-//      });
-//      int amount = fibernetUsers * fibpack + tcnUsers * tcnpack + extensions;
-//      setState(() {
-//        thisMonthSpent = amount;
-//      });
-//    } catch (e) {
-//      print(e);
-//      //TODO: same snackbar story
-//    }
-//    return true;
-//  }
 
   Future<bool> getThisMonthSpentMODIFIED(String searchDate) async {
     try {
@@ -157,31 +101,6 @@ class _BalanceScreenState extends State<BalanceScreen> {
     return true;
   }
 
-//  Future<bool> calculateThisMonthCollectedDEPRECATED() async {
-//    int thisMonthCollected = 0;
-//
-//    String searchWord = yearMonthString;
-//    await _firestore
-//        .collection('bills')
-//        .orderBy('paidon')
-//        .startAt([searchWord])
-//        .endAt([searchWord + '\uf8ff'])
-//        .get()
-//        .then((querySnapshot) {
-//          querySnapshot.docs.forEach((element) {
-////            print(element.id);
-//            thisMonthCollected += element['amountcollected'];
-//          });
-//        });
-//
-//    setState(() {
-//      monthCollection = thisMonthCollected;
-//    });
-//
-////    print('Total collected this month $thisMonthCollected');
-//    return true;
-//  }
-
   Future<bool> calculateThisMonthCollected() async {
     int thisMonthCollected = 0;
 
@@ -216,8 +135,9 @@ class _BalanceScreenState extends State<BalanceScreen> {
     try {
       await getThisMonthSpentMODIFIED(searchDate); // speedy cn
       await calculateThisMonthCollected(); // somewhat speedy
-      await calculateThisDayTotal(searchDate); // somew
+      await calculateThisDayTotal(searchDate); // somewhat speedy
       await getUsersCount(); // hat speedy
+      await calculatePercentage();
     } catch (e) {
       print(e);
     }
@@ -328,49 +248,282 @@ class _BalanceScreenState extends State<BalanceScreen> {
                               ),
                               packActivated
                                   ? Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 60),
-                                      child: Center(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              '₹ $monthCollection',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w900,
-                                                fontSize: 40,
-                                              ),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 8),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                EdgeInsets.only(bottom: 8.0),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Container(
+                                                    child: Column(
+                                                      children: [
+                                                        Container(
+                                                          child: Center(
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  '₹ $monthCollection',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w900,
+                                                                    fontSize:
+                                                                        32,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  'Collected this month',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w900,
+                                                                    fontSize:
+                                                                        14,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          width:
+                                                              double.infinity,
+                                                          height: 120,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8.0),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        Container(
+                                                          child: Center(
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  '₹ ${thisMonthSpent + dueFromLastMonth}',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w900,
+                                                                    fontSize:
+                                                                        26,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  'To be collected',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w900,
+                                                                    fontSize:
+                                                                        14,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          width:
+                                                              double.infinity,
+                                                          height: 80,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .white,
+                                                                width: 3),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8.0),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 8.0,
+                                                ),
+                                                Expanded(
+                                                  child: Container(
+                                                    width: double.infinity,
+                                                    height: 208,
+                                                    child: Stack(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .bottomEnd,
+                                                      children: [
+                                                        Container(
+                                                          width:
+                                                              double.infinity,
+                                                          height: (percentage /
+                                                                  100) *
+                                                              208,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        4.0),
+                                                            color:
+                                                                kSecondaryColor,
+                                                          ),
+                                                        ),
+                                                        Center(
+                                                          child: Text(
+                                                            '$percentage%',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w900,
+                                                              fontSize: 22,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors.white,
+                                                          width: 3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.0),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            Text(
-                                              '₹ ${thisMonthSpent + dueFromLastMonth}',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w900,
-                                                fontSize: 28,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Container(
+                                                  child: Center(
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          '₹ $thisMonthSpent',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.w900,
+                                                            fontSize: 22,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'This month spent',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.w900,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  height: 80,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: kSecondaryColor,
+                                                        width: 3),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                    color: kSecondaryColor,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              '₹ $thisMonthSpent + ₹ $dueFromLastMonth',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w900,
-                                                fontSize: 18,
+                                              SizedBox(
+                                                width: 8.0,
                                               ),
-                                            ),
-                                            Text(
-                                              'To be collected : ₹ ${thisMonthSpent + dueFromLastMonth - monthCollection}',
-                                              style: TextStyle(
-                                                color: kSecondaryColor,
-                                                fontWeight: FontWeight.w900,
-                                                fontSize: 18,
+                                              Expanded(
+                                                child: Container(
+                                                  child: Center(
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          '₹ $dueFromLastMonth',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.w900,
+                                                            fontSize: 22,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Old months due',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.w900,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  height: 80,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 3),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                  ),
+                                                ),
                                               ),
-                                            )
-                                          ],
-                                        ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                       decoration: BoxDecoration(
                                         borderRadius:

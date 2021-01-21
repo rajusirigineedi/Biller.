@@ -121,9 +121,25 @@ class UserBarUnPaidList extends StatelessWidget {
                       SizedBox(
                         height: 8,
                       ),
-                      Text(
-                        user.isfibernet ? 'AP Fibernet' : 'TCN Digital',
-                        style: kFontStyleForConnectionType,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            user.isfibernet ? 'AP Fibernet' : 'TCN Digital',
+                            style: kFontStyleForConnectionType,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 16.0),
+                            child: Text(
+                              user.userid,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF7C7C7C),
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
